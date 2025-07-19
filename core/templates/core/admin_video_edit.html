@@ -1,0 +1,41 @@
+{% extends 'core/base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block title %}Edit Video: {{ video.title }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mt-5">
+    <div class="col-md-8 col-lg-6">
+        <div class="card p-4 shadow-lg border-0 bg-gradient-card">
+            <h2 class="text-center mb-4 text-white">Edit Video: {{ video.title }}</h2>
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ form|crispy }}
+            </form>
+            <div class="mt-4 text-center">
+                <h5 class="text-white mb-3">Current Thumbnail:</h5>
+                {% if video.thumbnail %}
+                    <img src="{{ video.thumbnail.url }}" alt="{{ video.title }} thumbnail" class="img-fluid rounded mb-3" style="max-width: 250px;">
+                {% else %}
+                    <p class="text-white-75">No thumbnail generated or provided.</p>
+                {% endif %}
+            </div>
+            {% if video.video_type == 'file' and video.video_file %}
+                <div class="mt-4 text-center">
+                    <h5 class="text-white mb-3">Current Video File:</h5>
+                    <video controls width="100%" height="auto" class="rounded">
+                        <source src="{{ video.video_file.url }}" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+            {% elif video.video_type == 'link' and video.video_url %}
+                <div class="mt-4 text-center">
+                    <h5 class="text-white mb-3">Current Video URL:</h5>
+                    <p class="text-white-75"><a href="{{ video.video_url }}" target="_blank" class="text-info-gradient">{{ video.video_url }}</a></p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

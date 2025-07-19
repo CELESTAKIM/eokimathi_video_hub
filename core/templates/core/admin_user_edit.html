@@ -1,0 +1,18 @@
+{% extends 'core/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Edit User: {{ user_to_edit.username }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mt-5">
+    <div class="col-md-8 col-lg-6">
+        <div class="card p-4 shadow-lg border-0 bg-gradient-card">
+            <h2 class="text-center mb-4 text-white">Edit User: {{ user_to_edit.username }}</h2>
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ form|crispy }}
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

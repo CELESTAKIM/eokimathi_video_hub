@@ -1,14 +1,14 @@
 {% extends 'core/base.html' %}
 {% load crispy_forms_tags %}
 
-{% block title %}Upload Video{% endblock %}
+{% block title %}Send Notifications{% endblock %}
 
 {% block content %}
 <div class="row justify-content-center mt-5">
     <div class="col-md-8 col-lg-6">
         <div class="card p-4 shadow-lg border-0 bg-gradient-card">
-            <h2 class="text-center mb-4 text-white">Upload New Video</h2>
-            <form method="post" enctype="multipart/form-data">
+            <h2 class="text-center mb-4 text-white">Send Notifications to Users</h2>
+            <form method="post">
                 {% csrf_token %}
                 {{ form|crispy }}
             </form>

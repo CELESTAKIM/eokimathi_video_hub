@@ -1,0 +1,73 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Manage Videos{% endblock %}
+
+{% block content %}
+<div class="row pt-4">
+    <div class="col-12 text-center mb-4">
+        <h1 class="display-4 text-white">Manage Videos</h1>
+        <p class="lead text-white-75">Edit or delete existing videos.</p>
+        <a href="{% url 'admin_video_upload' %}" class="btn btn-primary-gradient my-3"><i class="fas fa-plus-circle me-2"></i> Upload New Video</a>
+    </div>
+
+    <div class="col-12">
+        <div class="table-responsive">
+            <table class="table table-dark table-striped table-hover rounded-3 overflow-hidden">
+                <thead>
+                    <tr>
+                        <th scope="col">Thumbnail</th>
+                        <th scope="col">Title</th>
+                        <th scope="col">Uploader</th>
+                        <th scope="col">Type</th>
+                        <th scope="col">Views</th>
+                        <th scope="col">Likes</th>
+                        <th scope="col">Uploaded At</th>
+                        <th scope="col">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for video in page_obj %}
+                    <tr>
+                        <td>
+                            {% if video.thumbnail %}
+                                <img src="{{ video.thumbnail.url }}" alt="{{ video.title }}" style="width: 80px; height: 45px; object-fit: cover;">
+                            {% else %}
+                                <img src="{% static 'core/img/default_video_thumbnail.jpg' %}" alt="Default" style="width: 80px; height: 45px; object-fit: cover;">
+                            {% endif %}
+                        </td>
+                        <td class="text-white">{{ video.title }}</td>
+                        <td class="text-white-75">{{ video.admin.username }}</td>
+                        <td class="text-white-75">{{ video.get_video_type_display }}</td>
+                        <td class="text-white-75">{{ video.views }}</td>
+                        <td class="text-white-75">{{ video.likes.count }}</td>
+                        <td class="text-white-75">{{ video.uploaded_at|date:"M d, Y" }}</td>
+                        <td>
+                            <div class="d-flex flex-nowrap">
+                                <a href="{% url 'admin_video_edit' video.pk %}" class="btn btn-sm btn-warning-gradient me-2" title="Edit"><i class="fas fa-edit"></i></a>
+                                <form action="{% url 'admin_video_delete' video.pk %}" method="post" onsubmit="return confirm('Are you sure you want to delete this video?');">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-danger-gradient me-2" title="Delete"><i class="fas fa-trash-alt"></i></button>
+                                </form>
+                                <form action="{% url 'admin_video_add_likes' video.pk %}" method="post" class="d-flex align-items-center">
+                                    {% csrf_token %}
+                                    <input type="number" name="num_likes" value="100" min="1" class="form-control form-control-sm me-1" style="width: 80px;">
+                                    <button type="submit" class="btn btn-sm btn-success-gradient" title="Add Likes"><i class="fas fa-plus-square"></i></button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="8" class="text-center text-white-75">No videos found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% include 'core/pagination.html' %}
+
+{% endblock %}

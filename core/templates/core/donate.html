@@ -1,0 +1,70 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Donate{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mt-5">
+    <div class="col-md-8 col-lg-6">
+        <div class="card p-4 shadow-lg border-0 bg-gradient-card text-white">
+            <h1 class="text-center mb-4 text-white">Support EO KIMATHI Video Hub</h1>
+            <p class="lead text-center text-white-75 mb-4">Your contributions help us continue to provide valuable content related to GIS, Remote Sensing, and more.</p>
+
+            <div class="mb-5 text-center">
+                <h3 class="text-white mb-3">Direct M-Pesa Payment (Kenya)</h3>
+                <p class="text-white-75">You can send your contributions directly via M-Pesa using the details below:</p>
+                <div class="bg-dark-gradient p-4 rounded shadow-sm d-inline-block text-start">
+                    <p class="mb-2 fs-5"><strong>Paybill Number:</strong> <span id="mpesaPaybill" class="text-info-gradient">{{ mpesa_paybill }}</span>
+                        <button class="btn btn-outline-info-gradient btn-sm ms-2" onclick="copyToClipboard('mpesaPaybill')" title="Copy Paybill Number">
+                            <i class="fas fa-copy"></i> Copy
+                        </button>
+                    </p>
+                    <p class="mb-0 fs-5"><strong>Account Name:</strong> <span id="mpesaAccount" class="text-info-gradient">{{ mpesa_account_name }}</span>
+                        <button class="btn btn-outline-info-gradient btn-sm ms-2" onclick="copyToClipboard('mpesaAccount')" title="Copy Account Name">
+                            <i class="fas fa-copy"></i> Copy
+                        </button>
+                    </p>
+                </div>
+                <p class="text-white-50 mt-3">
+                    Go to your M-Pesa menu, select "Lipa na M-Pesa", then "Pay Bill". Enter the Paybill Number, then the Account Name, and the amount you wish to donate.
+                </p>
+            </div>
+
+            <div class="mb-5 text-center">
+                <h3 class="text-white mb-3">Other Donation Methods (Coming Soon)</h3>
+                <p class="text-white-75">We are working on integrating more payment options for your convenience, including:</p>
+                <ul class="list-unstyled text-center">
+                    <li><span class="text-white-50"><i class="fab fa-cc-paypal me-2"></i> PayPal (Not Active)</span></li>
+                    <li><span class="text-white-50"><i class="fas fa-money-check-alt me-2"></i> STK Push (Not Active)</span></li>
+                    </ul>
+            </div>
+
+            <p class="text-center text-white-75">Thank you for your generous support!</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function copyToClipboard(elementId) {
+    const element = document.getElementById(elementId);
+    const textToCopy = element.textContent.trim(); // Get the text content, remove leading/trailing whitespace
+
+    // Create a temporary textarea element
+    const tempInput = document.createElement('textarea');
+    tempInput.value = textToCopy;
+    document.body.appendChild(tempInput);
+
+    // Select the text and copy it
+    tempInput.select();
+    tempInput.setSelectionRange(0, 99999); // For mobile devices
+    document.execCommand('copy');
+
+    // Remove the temporary textarea
+    document.body.removeChild(tempInput);
+
+    alert(`Copied "${textToCopy}" to clipboard!`);
+}
+</script>
+{% endblock %}

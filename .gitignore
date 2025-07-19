@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+lib/
+include/
+bin/
+share/
+local/
+
+# Django
+*.log
+*.pot
+*.mo
+*.js.map
+*.css.map
+db.sqlite3
+media/  # Exclude user uploaded media files (will be stored on S3)
+
+# Environment variables
+.env
+.flaskenv
+.vscode/
+# IDEs
+.idea/
+*.iml
+.DS_Store

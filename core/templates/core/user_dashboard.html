@@ -1,0 +1,67 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Your Dashboard{% endblock %}
+
+{% block content %}
+<div class="row pt-4">
+    <div class="col-12 text-center mb-4">
+        <h1 class="display-4 text-white">Hello, {{ user.username }}!</h1>
+        <p class="lead text-white-75">Welcome to your personalized video feed and profile.</p>
+    </div>
+
+    <div class="col-12 mb-4">
+        <form method="get" class="d-flex flex-wrap gap-2 justify-content-center">
+            <div class="input-group flex-grow-1" style="max-width: 400px;">
+                <input type="text" name="q" class="form-control form-control-dark" placeholder="Search videos..." value="{{ search_query|default_if_none:'' }}">
+                <button type="submit" class="btn btn-primary-gradient"><i class="fas fa-search"></i> Search</button>
+            </div>
+            <div class="dropdown">
+                <button class="btn btn-outline-light-gradient dropdown-toggle" type="button" id="tagFilterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-tags me-1"></i> Filter by Tag: {{ selected_tag|default:"All"|capfirst }}
+                </button>
+                <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="tagFilterDropdown">
+                    <li><a class="dropdown-item {% if not selected_tag %}active{% endif %}" href="{% url 'user_dashboard' %}">All Tags</a></li>
+                    {% for tag in all_tags %}
+                        <li><a class="dropdown-item {% if selected_tag == tag %}active{% endif %}" href="{% url 'user_dashboard' %}?tag={{ tag }}">{{ tag|capfirst }}</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </form>
+    </div>
+
+    {% for video in page_obj %}
+    <div class="col-md-4 col-sm-6 mb-4">
+        <div class="card video-card h-100 shadow-sm border-0 bg-gradient-card">
+            <a href="{% url 'video_detail' video.slug %}">
+                {% if video.thumbnail %}
+                    <img src="{{ video.thumbnail.url }}" class="card-img-top video-thumbnail" alt="{{ video.title }} thumbnail">
+                {% else %}
+                    <img src="{% static 'core/img/default_video_thumbnail.jpg' %}" class="card-img-top video-thumbnail" alt="Default thumbnail">
+                {% endif %}
+            </a>
+            <div class="card-body d-flex flex-column">
+                <h5 class="card-title text-white mb-2">{{ video.title }}</h5>
+                <p class="card-text text-white-75 mb-auto">{{ video.description|truncatechars:100 }}</p>
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                    <small class="text-white-50"><i class="fas fa-eye me-1"></i> {{ video.views }} views</small>
+                    <small class="text-white-50"><i class="fas fa-heart me-1"></i> {{ video.likes.count }} likes</small>
+                </div>
+                <div class="mt-2">
+                    {% for tag in video.tags|split_tags %}
+                        <span class="badge bg-secondary-gradient me-1">{{ tag|capfirst }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12 text-center">
+        <p class="lead text-white-75">No videos found matching your criteria.</p>
+    </div>
+    {% endfor %}
+</div>
+
+{% include 'core/pagination.html' %}
+
+{% endblock %}

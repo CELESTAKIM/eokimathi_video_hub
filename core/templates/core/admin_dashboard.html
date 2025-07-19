@@ -1,0 +1,274 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="row pt-4">
+    <div class="col-12 text-center mb-4">
+        <h1 class="display-4 text-white">Admin Dashboard</h1>
+        <p class="lead text-white-75">Manage users, videos, feedback, and view site analytics.</p>
+    </div>
+
+    <div class="col-md-3 mb-4">
+        <div class="card bg-gradient-info text-white shadow-sm border-0 h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-users fa-3x mb-3"></i>
+                <h5 class="card-title">Total Users</h5>
+                <p class="card-text fs-3 fw-bold">{{ total_users }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-4">
+        <div class="card bg-gradient-primary text-white shadow-sm border-0 h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-video fa-3x mb-3"></i>
+                <h5 class="card-title">Total Videos</h5>
+                <p class="card-text fs-3 fw-bold">{{ total_videos }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-4">
+        <div class="card bg-gradient-success text-white shadow-sm border-0 h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-heart fa-3x mb-3"></i>
+                <h5 class="card-title">Total Likes</h5>
+                <p class="card-text fs-3 fw-bold">{{ total_likes }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-4">
+        <div class="card bg-gradient-danger text-white shadow-sm border-0 h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-comments fa-3x mb-3"></i>
+                <h5 class="card-title">Total Comments</h5>
+                <p class="card-text fs-3 fw-bold">{{ total_comments }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-4">
+        <div class="card bg-gradient-warning text-dark shadow-sm border-0 h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-envelope fa-3x mb-3"></i>
+                <h5 class="card-title">Total Feedback</h5>
+                <p class="card-text fs-3 fw-bold">{{ total_feedback }}</p>
+                {% if unread_feedback > 0 %}
+                    <span class="badge bg-danger">Unread: {{ unread_feedback }}</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-5">
+    <div class="col-12">
+        <h3 class="text-white mb-3">Quick Actions</h3>
+        <div class="d-flex flex-wrap gap-3">
+            <a href="{% url 'admin_video_upload' %}" class="btn btn-primary-gradient"><i class="fas fa-plus-circle me-2"></i> Upload New Video</a>
+            <a href="{% url 'admin_video_list' %}" class="btn btn-info-gradient"><i class="fas fa-film me-2"></i> Manage Videos</a>
+            <a href="{% url 'admin_user_list' %}" class="btn btn-success-gradient"><i class="fas fa-users-cog me-2"></i> Manage Users</a>
+            <a href="{% url 'admin_feedback_list' %}" class="btn btn-warning-gradient text-dark"><i class="fas fa-comment-dots me-2"></i> View Feedback</a>
+            <a href="{% url 'admin_send_notification' %}" class="btn btn-danger-gradient"><i class="fas fa-bell me-2"></i> Send Notifications</a>
+            <a href="{% url 'admin_download_users_csv' %}" class="btn btn-secondary-gradient"><i class="fas fa-download me-2"></i> Download User Data (CSV)</a>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-5">
+    <div class="col-md-6 mb-4">
+        <div class="card p-3 shadow-lg border-0 bg-gradient-card h-100">
+            <h4 class="text-white mb-3 text-center">Videos by Tags</h4>
+            <canvas id="tagsPieChart"></canvas>
+        </div>
+    </div>
+    <div class="col-md-6 mb-4">
+        <div class="card p-3 shadow-lg border-0 bg-gradient-card h-100">
+            <h4 class="text-white mb-3 text-center">Videos Uploaded Over Time</h4>
+            <canvas id="uploadLineChart"></canvas>
+        </div>
+    </div>
+    <div class="col-12 mb-4">
+        <div class="card p-3 shadow-lg border-0 bg-gradient-card h-100">
+            <h4 class="text-white mb-3 text-center">Most Viewed Videos</h4>
+            <canvas id="mostViewedBarChart"></canvas>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Data from Django context (parsed as JSON)
+    const tagsData = {{ tags_chart_data|safe }};
+    const uploadData = {{ upload_chart_data|safe }};
+    const viewedData = {{ viewed_chart_data|safe }};
+
+    // Helper to generate a random color
+    function getRandomColor() {
+        const r = Math.floor(Math.random() * 255);
+        const g = Math.floor(Math.random() * 255);
+        const b = Math.floor(Math.random() * 255);
+        return `rgba(${r}, ${g}, ${b}, 0.7)`;
+    }
+    const backgroundColors = tagsData.labels.map(() => getRandomColor());
+    const borderColors = backgroundColors.map(color => color.replace('0.7', '1'));
+
+    // Pie Chart: Videos by Tags
+    const tagsPieCtx = document.getElementById('tagsPieChart').getContext('2d');
+    new Chart(tagsPieCtx, {
+        type: 'pie',
+        data: {
+            labels: tagsData.labels,
+            datasets: [{
+                data: tagsData.data,
+                backgroundColor: backgroundColors,
+                borderColor: borderColors,
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'right',
+                    labels: {
+                        color: 'rgba(255, 255, 255, 0.8)', // Text color for legend
+                    }
+                },
+                title: {
+                    display: false, // Title moved to H4 tag above
+                }
+            }
+        }
+    });
+
+    // Line Chart: Videos Uploaded Over Time
+    const uploadLineCtx = document.getElementById('uploadLineChart').getContext('2d');
+    new Chart(uploadLineCtx, {
+        type: 'line',
+        data: {
+            labels: uploadData.labels,
+            datasets: [{
+                label: 'Videos Uploaded',
+                data: uploadData.data,
+                borderColor: 'rgba(75, 192, 192, 1)',
+                backgroundColor: 'rgba(75, 192, 192, 0.4)',
+                fill: true,
+                tension: 0.1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    labels: {
+                        color: 'rgba(255, 255, 255, 0.8)',
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Date',
+                        color: 'rgba(255, 255, 255, 0.7)'
+                    },
+                    ticks: {
+                        color: 'rgba(255, 255, 255, 0.8)'
+                    },
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.1)'
+                    }
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Number of Videos',
+                        color: 'rgba(255, 255, 255, 0.7)'
+                    },
+                    beginAtZero: true,
+                    ticks: {
+                        color: 'rgba(255, 255, 255, 0.8)'
+                    },
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.1)'
+                    }
+                }
+            }
+        }
+    });
+
+    // Bar Chart: Most Viewed Videos
+    const mostViewedBarCtx = document.getElementById('mostViewedBarChart').getContext('2d');
+    new Chart(mostViewedBarCtx, {
+        type: 'bar',
+        data: {
+            labels: viewedData.labels,
+            datasets: [{
+                label: 'Views',
+                data: viewedData.data,
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.6)',
+                    'rgba(54, 162, 235, 0.6)',
+                    'rgba(255, 206, 86, 0.6)',
+                    'rgba(75, 192, 192, 0.6)',
+                    'rgba(153, 102, 255, 0.6)'
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    labels: {
+                        color: 'rgba(255, 255, 255, 0.8)',
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Video Title',
+                        color: 'rgba(255, 255, 255, 0.7)'
+                    },
+                    ticks: {
+                        color: 'rgba(255, 255, 255, 0.8)'
+                    },
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.1)'
+                    }
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Number of Views',
+                        color: 'rgba(255, 255, 255, 0.7)'
+                    },
+                    beginAtZero: true,
+                    ticks: {
+                        color: 'rgba(255, 255, 255, 0.8)'
+                    },
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.1)'
+                    }
+                }
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

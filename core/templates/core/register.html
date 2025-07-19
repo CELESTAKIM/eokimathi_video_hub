@@ -1,0 +1,22 @@
+{% extends 'core/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Register{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mt-5">
+    <div class="col-md-8 col-lg-6">
+        <div class="card p-4 shadow-lg border-0 bg-gradient-card">
+            <h2 class="text-center mb-4 text-white">Register for EO KIMATHI Video Hub</h2>
+            <form method="post">
+                {% csrf_token %}
+                {{ form|crispy }}
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary-gradient mt-3">Register</button>
+                </div>
+            </form>
+            <p class="text-center mt-3 text-white-75">Already have an account? <a href="{% url 'login' %}" class="text-info-gradient">Login here</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}

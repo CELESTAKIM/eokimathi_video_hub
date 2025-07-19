@@ -1,0 +1,336 @@
+/* core/static/core/css/style.css */
+
+/* Define Color Palette for Gradients */
+:root {
+    --color-red-start: #B12B1D; /* Deep Red */
+    --color-orange-red: #D9462A; /* Orange-Red */
+    --color-orange: #FF7B00; /* Bright Orange */
+    --color-yellow-orange: #FFA500; /* Yellow-Orange */
+    --color-yellow: #FFDB00; /* Bright Yellow */
+    --color-lime-green: #B19719; /* Adjusted for better flow */
+    --color-green-mid: #7BB11B; /* Mid Green */
+    --color-green-end: #16B13D; /* Vibrant Green */
+
+    --dark-bg-start: #1a1a1a;
+    --dark-bg-end: #0a0a0a;
+
+    --text-light: #f8f9fa;
+    --text-muted: #ced4da;
+    --text-dark: #343a40;
+}
+
+/* Base Body and Background Gradient */
+body {
+    background: linear-gradient(to right, var(--color-red-start), var(--color-orange-red), var(--color-yellow-orange), var(--color-lime-green), var(--color-green-end));
+    background-attachment: fixed; /* Ensures gradient covers full height */
+    color: var(--text-light); /* Default text color */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Navbar Gradient */
+.bg-gradient-nav {
+    background: linear-gradient(to right, var(--color-green-end), var(--color-green-mid), var(--color-yellow-orange));
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+.navbar-brand, .nav-link {
+    color: var(--text-light) !important;
+    font-weight: 500;
+}
+.navbar-nav .nav-link:hover {
+    color: var(--color-red-start) !important; /* Contrasting hover for nav links */
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+}
+.dropdown-menu {
+    background-color: var(--dark-bg-start);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+.dropdown-item {
+    color: var(--text-light) !important;
+}
+.dropdown-item:hover {
+    background-color: var(--color-red-start) !important;
+    color: var(--text-light) !important;
+}
+
+/* Card Background Gradients */
+.bg-gradient-card {
+    background: linear-gradient(135deg, rgba(30, 30, 30, 0.9), rgba(15, 15, 15, 0.9));
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+}
+.bg-dark-gradient { /* For comments, etc. */
+    background: linear-gradient(135deg, rgba(40, 40, 40, 0.8), rgba(20, 20, 20, 0.8));
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Footer Gradient */
+.bg-gradient-footer {
+    background: linear-gradient(to left, var(--color-green-end), var(--color-yellow-orange));
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Headings and Text Colors */
+h1, h2, h3, h4, h5, h6 {
+    color: var(--text-light);
+}
+p, span, small {
+    color: var(--text-muted);
+}
+.text-white { color: var(--text-light) !important; }
+.text-white-75 { color: rgba(255, 255, 255, 0.75) !important; }
+.text-white-50 { color: rgba(255, 255, 255, 0.5) !important; }
+
+/* Custom Buttons with Gradients */
+.btn-primary-gradient {
+    background: linear-gradient(to right, var(--color-red-start), var(--color-orange-red));
+    border: none;
+    color: white;
+    transition: all 0.3s ease;
+}
+.btn-primary-gradient:hover {
+    background: linear-gradient(to left, var(--color-red-start), var(--color-orange-red));
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    color: white;
+}
+
+.btn-outline-primary-gradient {
+    background: transparent;
+    border: 1px solid var(--color-red-start);
+    color: var(--color-red-start);
+    transition: all 0.3s ease;
+}
+.btn-outline-primary-gradient:hover {
+    background: linear-gradient(to right, var(--color-red-start), var(--color-orange-red));
+    color: white;
+    border-color: transparent;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.btn-info-gradient {
+    background: linear-gradient(to right, #007bff, #00c0ff); /* Blueish gradient */
+    border: none;
+    color: white;
+    transition: all 0.3s ease;
+}
+.btn-info-gradient:hover {
+    background: linear-gradient(to left, #007bff, #00c0ff);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    color: white;
+}
+.btn-outline-info-gradient {
+    background: transparent;
+    border: 1px solid #007bff;
+    color: #007bff;
+    transition: all 0.3s ease;
+}
+.btn-outline-info-gradient:hover {
+    background: linear-gradient(to right, #007bff, #00c0ff);
+    color: white;
+    border-color: transparent;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.btn-success-gradient {
+    background: linear-gradient(to right, var(--color-green-mid), var(--color-green-end));
+    border: none;
+    color: white;
+    transition: all 0.3s ease;
+}
+.btn-success-gradient:hover {
+    background: linear-gradient(to left, var(--color-green-mid), var(--color-green-end));
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    color: white;
+}
+
+.btn-warning-gradient {
+    background: linear-gradient(to right, var(--color-orange), var(--color-yellow));
+    border: none;
+    color: var(--text-dark); /* Dark text on light gradient */
+    transition: all 0.3s ease;
+}
+.btn-warning-gradient:hover {
+    background: linear-gradient(to left, var(--color-orange), var(--color-yellow));
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    color: var(--text-dark);
+}
+
+.btn-danger-gradient {
+    background: linear-gradient(to right, #dc3545, #ff4c4c);
+    border: none;
+    color: white;
+    transition: all 0.3s ease;
+}
+.btn-danger-gradient:hover {
+    background: linear-gradient(to left, #dc3545, #ff4c4c);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    color: white;
+}
+.btn-outline-danger-gradient {
+    background: transparent;
+    border: 1px solid #dc3545;
+    color: #dc3545;
+    transition: all 0.3s ease;
+}
+.btn-outline-danger-gradient:hover {
+    background: linear-gradient(to right, #dc3545, #ff4c4c);
+    color: white;
+    border-color: transparent;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.btn-secondary-gradient {
+    background: linear-gradient(to right, #6c757d, #9e9e9e);
+    border: none;
+    color: white;
+    transition: all 0.3s ease;
+}
+.btn-secondary-gradient:hover {
+    background: linear-gradient(to left, #6c757d, #9e9e9e);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    color: white;
+}
+
+
+/* Input fields and forms */
+.form-control, .form-select, .form-control-dark {
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-light);
+}
+.form-control:focus, .form-select:focus, .form-control-dark:focus {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: var(--color-green-mid);
+    box-shadow: 0 0 0 0.25rem rgba(var(--color-green-mid), 0.25);
+    color: var(--text-light);
+}
+.form-control::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+}
+label, .form-check-label {
+    color: var(--text-white-75);
+}
+.form-check-input {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+.form-check-input:checked {
+    background-color: var(--color-green-end);
+    border-color: var(--color-green-mid);
+}
+.form-control.is-invalid, .form-select.is-invalid {
+    border-color: #dc3545;
+}
+.invalid-feedback {
+    color: #dc3545;
+}
+
+
+/* Video Card Specifics */
+.video-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.video-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5) !important;
+}
+.video-thumbnail {
+    width: 100%;
+    height: 200px; /* Fixed height for thumbnails */
+    object-fit: cover; /* Ensures image covers the area, cropping if necessary */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+.badge {
+    padding: 0.5em 0.7em;
+    font-size: 0.8em;
+    border-radius: 0.25rem;
+}
+.bg-secondary-gradient {
+    background: linear-gradient(to right, #6c757d, #495057);
+    color: white;
+}
+.text-info-gradient {
+    background: linear-gradient(to right, #007bff, #00c0ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: bold;
+}
+.text-info-gradient:hover {
+    filter: brightness(1.2);
+}
+
+
+/* Pagination Styling */
+.custom-pagination .page-item .page-link {
+    background-color: rgba(30, 30, 30, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-light);
+    transition: all 0.3s ease;
+}
+.custom-pagination .page-item .page-link:hover {
+    background-color: var(--color-red-start);
+    border-color: var(--color-red-start);
+    color: white;
+}
+.custom-pagination .page-item.active .page-link,
+.custom-pagination .page-item.active .page-link:hover {
+    background: linear-gradient(to right, var(--color-red-start), var(--color-orange-red));
+    border-color: var(--color-red-start);
+    color: white;
+}
+.custom-pagination .page-item.disabled .page-link {
+    background-color: rgba(30, 30, 30, 0.5);
+    border-color: rgba(255, 255, 255, 0.05);
+    color: rgba(255, 255, 255, 0.3);
+}
+
+
+/* Responsive Bottom Navigation */
+.bottom-nav {
+    display: none; /* Hidden by default on larger screens */
+    background: linear-gradient(to right, var(--color-red-start), var(--color-green-end)); /* Red to Green gradient */
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    z-index: 1050; /* Above other content */
+}
+
+@media (max-width: 991.98px) { /* Bootstrap's 'lg' breakpoint */
+    .bottom-nav {
+        display: flex !important; /* Show on small screens */
+    }
+    body {
+        padding-bottom: 70px; /* Make space for the fixed bottom nav */
+    }
+    .navbar {
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
+    }
+    .main {
+        padding-top: 70px; /* Adjust main content padding for fixed nav */
+    }
+}
+
+.bottom-nav a {
+    flex: 1; /* Distribute items evenly */
+    padding: 8px 5px;
+    text-decoration: none;
+    font-size: 0.75rem; /* Smaller font for icons/text */
+    transition: background-color 0.2s ease, transform 0.2s ease;
+    border-radius: 5px;
+}
+.bottom-nav a:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+}
+.bottom-nav a i {
+    font-size: 1.2rem; /* Icon size */
+    margin-bottom: 3px;
+}

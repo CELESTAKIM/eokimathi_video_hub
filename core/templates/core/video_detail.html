@@ -1,0 +1,178 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}{{ video.title }}{% endblock %}
+
+{% block extra_head %}
+<style>
+    /* Specific styles for video detail page if needed */
+    .video-player-container {
+        position: relative;
+        width: 100%;
+        padding-bottom: 56.25%; /* 16:9 aspect ratio */
+        height: 0;
+        overflow: hidden;
+        border-radius: 8px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+        background-color: #000;
+    }
+    .video-player-container iframe,
+    .video-player-container video {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border: 0;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row pt-4">
+    <div class="col-lg-8 offset-lg-2">
+        <div class="card p-4 shadow-lg border-0 bg-gradient-card mb-4">
+            <h1 class="text-white mb-3 text-center">{{ video.title }}</h1>
+            <p class="text-white-75 text-center mb-4">Uploaded by {{ video.admin.username }} on {{ video.uploaded_at|date:"F d, Y" }}</p>
+
+            <div class="video-player-container mb-4">
+                {% if video.video_type == 'file' and video.video_file %}
+                    <video controls width="100%" height="auto" class="rounded">
+                        <source src="{{ video.video_file.url }}" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                {% elif video.video_type == 'link' and video.video_url %}
+                    <iframe src="{{ video.video_url }}" allowfullscreen></iframe>
+                {% else %}
+                    <div class="alert alert-warning text-center">No video content available.</div>
+                {% endif %}
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <span class="text-white-50"><i class="fas fa-eye me-1"></i> {{ video.views }} views</span>
+                <div>
+                    <button id="like-button" data-video-slug="{{ video.slug }}" class="btn {% if is_liked %}btn-danger-gradient{% else %}btn-outline-danger-gradient{% endif %} btn-sm me-2">
+                        <i class="fas fa-heart me-1"></i> <span id="likes-count">{{ video.likes.count }}</span> Likes
+                    </button>
+                    <button class="btn btn-outline-info-gradient btn-sm"><i class="fas fa-share-alt me-1"></i> Share</button>
+                </div>
+            </div>
+
+            <h5 class="text-white mb-2">Description:</h5>
+            <p class="text-white-75 mb-4">{{ video.description }}</p>
+
+            <h5 class="text-white mb-2">Tags:</h5>
+            <div class="mb-4">
+                {% for tag in video.tags|split_tags %}
+                    <span class="badge bg-secondary-gradient me-1">{{ tag|capfirst }}</span>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="card p-4 shadow-lg border-0 bg-gradient-card mb-4">
+            <h3 class="text-white mb-3">Comments ({{ comments.count }})</h3>
+            <form method="post" action="{% url 'video_detail' video.slug %}" class="mb-4" id="comment-form">
+                {% csrf_token %}
+                <input type="hidden" name="comment_form_submit" value="true">
+                {{ comment_form|crispy }}
+            </form>
+
+            <div id="comments-list">
+                {% for comment in comments %}
+                <div class="comment-item bg-dark-gradient p-3 rounded mb-3 shadow-sm">
+                    <p class="mb-1 text-white-75">
+                        <strong>{{ comment.user.username }}</strong> <small class="text-white-50 ms-2">{{ comment.created_at|timesince }} ago</small>
+                    </p>
+                    <p class="text-white">{{ comment.text }}</p>
+                </div>
+                {% empty %}
+                <p class="text-white-75">No comments yet. Be the first to comment!</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="card p-4 shadow-lg border-0 bg-gradient-card mb-4">
+            <h3 class="text-white mb-3">Send Feedback to Admin</h3>
+            <p class="text-white-75">Have specific feedback about this video? Let the admin know.</p>
+            <form method="post" action="{% url 'video_detail' video.slug %}" id="feedback-form">
+                {% csrf_token %}
+                <input type="hidden" name="feedback_form_submit" value="true">
+                {{ feedback_form|crispy }}
+            </form>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const likeButton = document.getElementById('like-button');
+    if (likeButton) {
+        likeButton.addEventListener('click', function() {
+            const videoSlug = this.dataset.videoSlug;
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+            const likesCountSpan = document.getElementById('likes-count');
+
+            fetch(`/video/${videoSlug}/like/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrfToken,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({}) // Empty body as we send data via URL
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.liked !== undefined) {
+                    likesCountSpan.textContent = data.likes_count;
+                    if (data.liked) {
+                        likeButton.classList.remove('btn-outline-danger-gradient');
+                        likeButton.classList.add('btn-danger-gradient');
+                    } else {
+                        likeButton.classList.remove('btn-danger-gradient');
+                        likeButton.classList.add('btn-outline-danger-gradient');
+                    }
+                    // Optionally show a message
+                    // alert(data.message);
+                } else if (data.error) {
+                    alert(data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while liking the video.');
+            });
+        });
+    }
+
+    // Toggle video_file and video_url visibility in admin_video_upload/edit
+    const videoTypeRadios = document.querySelectorAll('input[name="video_type"]');
+    const videoFileField = document.querySelector('.video-file-field');
+    const videoUrlField = document.querySelector('.video-url-field');
+
+    function toggleVideoFields() {
+        const selectedValue = document.querySelector('input[name="video_type"]:checked');
+        if (!selectedValue) return;
+
+        if (selectedValue.value === 'file') {
+            if (videoFileField) videoFileField.closest('.mb-3').style.display = 'block';
+            if (videoUrlField) videoUrlField.closest('.mb-3').style.display = 'none';
+        } else if (selectedValue.value === 'link') {
+            if (videoFileField) videoFileField.closest('.mb-3').style.display = 'none';
+            if (videoUrlField) videoUrlField.closest('.mb-3').style.display = 'block';
+        }
+    }
+
+    if (videoTypeRadios.length > 0) {
+        videoTypeRadios.forEach(radio => {
+            radio.addEventListener('change', toggleVideoFields);
+        });
+        // Initial call to set visibility based on default/saved value
+        toggleVideoFields();
+    }
+});
+</script>
+{% endblock %}

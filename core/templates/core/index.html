@@ -1,0 +1,61 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<div class="row pt-4">
+    <div class="col-12 text-center mb-4">
+        <h1 class="display-4 text-white">Welcome to EO KIMATHI Video Hub</h1>
+        <p class="lead text-white-75">Your source for GIS, Remote Sensing, Cartography, Survey, and Photogrammetry videos.</p>
+    </div>
+
+    <div class="col-12 mb-4">
+        <div class="d-flex flex-wrap justify-content-center gap-2">
+            <a href="{% url 'home' %}" class="btn {% if not selected_tag %}btn-primary-gradient{% else %}btn-outline-primary-gradient{% endif %} btn-sm">All Videos</a>
+            {% for tag in all_tags %}
+                <a href="{% url 'home' %}?tag={{ tag }}" class="btn {% if selected_tag == tag %}btn-primary-gradient{% else %}btn-outline-primary-gradient{% endif %} btn-sm">{{ tag|capfirst }}</a>
+            {% endfor %}
+        </div>
+    </div>
+
+    {% for video in page_obj %}
+    <div class="col-md-4 col-sm-6 mb-4">
+        <div class="card video-card h-100 shadow-sm border-0 bg-gradient-card">
+            <a href="{% if user.is_authenticated %}{% url 'video_detail' video.slug %}{% else %}{% url 'login' %}?next={{ video.get_absolute_url }}{% endif %}">
+                {% if video.thumbnail %}
+                    <img src="{{ video.thumbnail.url }}" class="card-img-top video-thumbnail" alt="{{ video.title }} thumbnail">
+                {% else %}
+                    <img src="{% static 'core/img/default_video_thumbnail.jpg' %}" class="card-img-top video-thumbnail" alt="Default thumbnail">
+                {% endif %}
+            </a>
+            <div class="card-body d-flex flex-column">
+                <h5 class="card-title text-white mb-2">{{ video.title }}</h5>
+                <p class="card-text text-white-75 mb-auto">{{ video.description|truncatechars:100 }}</p>
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                    <small class="text-white-50"><i class="fas fa-eye me-1"></i> {{ video.views }} views</small>
+                    <small class="text-white-50"><i class="fas fa-heart me-1"></i> {{ video.likes.count }} likes</small>
+                </div>
+                <div class="mt-2">
+                    {% for tag in video.tags|split_tags %}
+                        <span class="badge bg-secondary-gradient me-1">{{ tag|capfirst }}</span>
+                    {% endfor %}
+                </div>
+                {% if not user.is_authenticated %}
+                    <div class="mt-3">
+                        <a href="{% url 'login' %}?next={{ video.get_absolute_url }}" class="btn btn-outline-info-gradient btn-sm w-100">Login to Watch</a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12 text-center">
+        <p class="lead text-white-75">No videos found {% if selected_tag %}for tag "{{ selected_tag }}"{% endif %}.</p>
+    </div>
+    {% endfor %}
+</div>
+
+{% include 'core/pagination.html' %}
+
+{% endblock %}
